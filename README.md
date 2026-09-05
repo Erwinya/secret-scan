@@ -6,14 +6,15 @@ Intended as a local pre-commit / hygiene helper — not a replacement for enterp
 
 ## Status
 
-Project scaffolding is in place. Scanner rules, CLI options, and sample fixtures will land in follow-up commits.
+Directory walking and text-file discovery are in place. Matching rules, JSON output, and sample fixtures will land in follow-up commits.
 
-## Goals
+## Run (current)
 
-- Walk a project tree and skip build/cache directories
-- Match common secret patterns with clear rule names
-- Text and JSON reports
-- Non-zero exit when findings are present
+```powershell
+python src\secret_scan.py --path .
+```
+
+Lists candidate text files under `--path` (skips `.git`, `node_modules`, build caches, etc.).
 
 ## Requirements
 
