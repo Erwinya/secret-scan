@@ -6,15 +6,24 @@ Intended as a local pre-commit / hygiene helper — not a replacement for enterp
 
 ## Status
 
-Directory walking and text-file discovery are in place. Matching rules, JSON output, and sample fixtures will land in follow-up commits.
+Directory walking plus the first matching rules are live:
 
-## Run (current)
+- `aws_access_key` — `AKIA…` access key ids
+- `private_key` — PEM / OpenSSH private key headers
+
+More rules, JSON output, and sample fixtures will land in follow-up commits.
+
+## Run
 
 ```powershell
 python src\secret_scan.py --path .
 ```
 
-Lists candidate text files under `--path` (skips `.git`, `node_modules`, build caches, etc.).
+## Exit codes
+
+- `0` — no findings
+- `1` — one or more potential secrets
+- `2` — path not found / usage error
 
 ## Requirements
 
