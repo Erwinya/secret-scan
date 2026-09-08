@@ -4,19 +4,22 @@ Scan a directory for common secret patterns (API keys, tokens, private keys).
 
 Intended as a local pre-commit / hygiene helper — not a replacement for enterprise DLP.
 
-## Status
+## Rules
 
-Directory walking plus the first matching rules are live:
+- `aws_access_key`
+- `github_pat`
+- `slack_token`
+- `generic_api_key`
+- `private_key`
+- `jwt`
 
-- `aws_access_key` — `AKIA…` access key ids
-- `private_key` — PEM / OpenSSH private key headers
-
-More rules, JSON output, and sample fixtures will land in follow-up commits.
+Sample fixtures and allowlist support will land in follow-up commits.
 
 ## Run
 
 ```powershell
 python src\secret_scan.py --path .
+python src\secret_scan.py --path . --json
 ```
 
 ## Exit codes
