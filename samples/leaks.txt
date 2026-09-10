@@ -1,0 +1,10 @@
+# Intentionally fake fixtures for local demos â€” do not use as real credentials.
+
+aws_access_key_id = AKIAIOSFODNN7EXAMPLE
+github_token = ghp_exampleExampleExampleExampleExampl
+slack_bot = xoxb-TESTONLY-FAKESECRETVALUE
+api_key = "demo_secret_value_12345678"
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKFAKESECRETKEYMATERIALONLYFORSAMPLES
+-----END RSA PRIVATE KEY-----
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleGFtcGxlIn0.signature

@@ -13,14 +13,20 @@ Intended as a local pre-commit / hygiene helper — not a replacement for enterp
 - `private_key`
 - `jwt`
 
-Sample fixtures and allowlist support will land in follow-up commits.
-
 ## Run
 
 ```powershell
-python src\secret_scan.py --path .
-python src\secret_scan.py --path . --json
+python src\secret_scan.py --path samples
+python src\secret_scan.py --path samples --json
 ```
+
+`samples/leaks.txt` contains **intentionally fake** placeholders for demos.  
+`samples/clean.txt` should report no findings.
+
+## False positives
+
+Pattern matching is heuristic. Treat findings as candidates to review, not confirmed leaks.  
+Common noise sources: example docs, test fixtures, and long base64 blobs.
 
 ## Exit codes
 
