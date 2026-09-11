@@ -59,7 +59,9 @@ def is_ignored(path: Path, root: Path, ignore_patterns: list[re.Pattern[str]]) -
         rel = str(path.relative_to(root)).replace("\\", "/")
     except ValueError:
         rel = str(path).replace("\\", "/")
-    return any(p.search(rel) for p in ignore_patterns)
+    name = path.name
+    candidates = {rel, name, f"**/{name}"}
+    return any(p.search(c) for c in candidates for p in ignore_patterns)
 
 
 def iter_files(root: Path, ignore_patterns: list[re.Pattern[str]] | None = None) -> list[Path]:
