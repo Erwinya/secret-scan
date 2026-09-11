@@ -33,12 +33,46 @@ class Finding:
     snippet: str
 
 
-def iter_files(root: Path) -> list[Path]:
+def load_ignore_patterns(root: Path, explicit: Path | None = None) -> list[re.Pattern[str]]:
+    """Load path allowlist patterns from .secretignore (one glob-ish regex per line)."""
+    path = explicit if explicit is not None else root / ".secretignore"
+    if not path.is_file():
+        return []
+    patterns: list[re.Pattern[str]] = []
+    for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        # Convert simple * wildcards to regex; otherwise treat as substring/regex.
+        if "*" in line and not any(ch in line for ch in ".+?[](){}^$|\\"):
+            escaped = re.escape(line).replace(r"\*", ".*")
+            patterns.append(re.compile(escaped, re.IGNORECASE))
+        else:
+            patterns.append(re.compile(line, re.IGNORECASE))
+    return patterns
+
+
+def is_ignored(path: Path, root: Path, ignore_patterns: list[re.Pattern[str]]) -> bool:
+    if not ignore_patterns:
+        return False
+    try:
+        rel = str(path.relative_to(root)).replace("\\", "/")
+    except ValueError:
+        rel = str(path).replace("\\", "/")
+    return any(p.search(rel) for p in ignore_patterns)
+
+
+def iter_files(root: Path, ignore_patterns: list[re.Pattern[str]] | None = None) -> list[Path]:
+    ignore_patterns = ignore_patterns or []
     files: list[Path] = []
     for path in root.rglob("*"):
         if not path.is_file():
             continue
         if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        if path.name == ".secretignore":
+            continue
+        if is_ignored(path, root, ignore_patterns):
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES and path.name not in {".env", "Dockerfile"}:
             continue
@@ -66,6 +100,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Scan a directory for secret-like strings")
     parser.add_argument("--path", default=".", help="Directory to scan")
     parser.add_argument("--json", action="store_true", help="Emit findings as JSON")
+    parser.add_argument(
+        "--ignore-file",
+        type=Path,
+        help="Allowlist file (default: <path>/.secretignore)",
+    )
     args = parser.parse_args(argv)
 
     root = Path(args.path)
@@ -73,8 +112,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: path not found: {root}", file=sys.stderr)
         return 2
 
+    ignore_patterns = load_ignore_patterns(root, args.ignore_file)
     findings: list[Finding] = []
-    for file_path in iter_files(root):
+    for file_path in iter_files(root, ignore_patterns):
         findings.extend(scan_file(file_path))
 
     if args.json:

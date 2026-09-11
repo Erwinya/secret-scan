@@ -23,6 +23,18 @@ python src\secret_scan.py --path samples --json
 `samples/leaks.txt` contains **intentionally fake** placeholders for demos.  
 `samples/clean.txt` should report no findings.
 
+### Allowlist (`.secretignore`)
+
+Place a `.secretignore` file in the scan root (or pass `--ignore-file`) to skip known demo/fixture paths:
+
+```text
+# one pattern per line
+samples/leaks.txt
+**/fixtures/*
+```
+
+`samples/.secretignore` skips `samples/leaks.txt` when scanning that folder.
+
 ## False positives
 
 Pattern matching is heuristic. Treat findings as candidates to review, not confirmed leaks.  
