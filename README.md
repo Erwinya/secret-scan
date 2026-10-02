@@ -1,4 +1,4 @@
-﻿# secret-scan
+# secret-scan
 
 Scan a directory for common secret patterns (API keys, tokens, private keys).
 
@@ -45,6 +45,13 @@ Common noise sources: example docs, test fixtures, and long base64 blobs.
 - `0` — no findings
 - `1` — one or more potential secrets
 - `2` — path not found / usage error
+
+In PowerShell, check `$LASTEXITCODE` after a scan:
+
+```powershell
+python src\secret_scan.py --path samples
+if ($LASTEXITCODE -eq 1) { Write-Host "Potential secrets found" }
+```
 
 ## Requirements
 
